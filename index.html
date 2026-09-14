@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+
+<body>
+	<button id="myBtn">КЛИК!</button>
+	<div id="touchpad">
+
+	</div>
+	<script>
+		// Сначала объявляем ГЛОБАЛЬНЫЕ переменные
+		let startX = 0
+		let startY = 0
+
+		let initialX = 0;
+		let initialY = 0;
+
+		let touchStartTime = 0;
+		let hasMoved = false;
+
+		let timerId = null;
+		let isDragging = false;
+
+		// Подключаемся к серверу
+		const socket = new WebSocket(`ws://${window.location.hostname}:8765`)
+
+		// 1. Находим кнопку по ID
+		const button = document.getElementById('myBtn')
+
+		const pad = document.getElementById('touchpad')
+
+		socket.onopen = () => console.log('Подключено!')
+		// 2. Вешаем слушатель клика
+		button.addEventListener('click', () => {
+
+			// 3. Выводим текст в консоль браузера
+			console.log('КЛИК!')
+			socket.send("click");
+		})
+		pad.addEventListener('touchstart', (event) => {
+			const firstTouch = event.touches[0];
+
+			startX = firstTouch.clientX;
+			startY = firstTouch.clientY;
+
+			initialX = firstTouch.clientX;
+			initialY = firstTouch.clientY;
+
+			touchStartTime = Date.now();
+			hasMoved = false;
+			timerId = setTimeout(() => {
+				isDragging = true;
+				socket.send("mousedown")
+			}, 400)
+
+
+		})
+		pad.addEventListener('touchmove', (event) => {
+
+			const secondTouch = event.touches[0];
+
+			const currentX = secondTouch.clientX;
+			const currentY = secondTouch.clientY;
+
+			let dx = currentX - startX
+			let dy = currentY - startY
+
+			if (isDragging) {
+				dx = currentX - startX
+				dy = currentY - startY
+			}
+			else {
+				dx = (currentX - startX) * 2
+				dy = (currentY - startY) * 2
+			}
+
+			startX = currentX
+			startY = currentY
+
+			const distance = Math.hypot(currentX - initialX, currentY - initialY)
+
+			if (distance > 10) {
+				hasMoved = true
+				clearTimeout(timerId)
+			}
+
+			socket.send(`${dx},${dy}`)
+		})
+
+		pad.addEventListener('touchend', (event) => {
+			const touchDuration = Date.now() - touchStartTime;
+			clearTimeout(timerId)
+
+			if (isDragging) {
+				socket.send("mouseup")
+				isDragging = false;
+			} else if (!hasMoved && touchDuration < 250 && !isDragging) {
+				socket.send("click")
+			}
+		})
+	</script>
+</body>
+
+</html>

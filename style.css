@@ -1,0 +1,89 @@
+/* Сброс базовых отступов и запрет скролла страницы на телефоне */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	user-select: none;
+	/* Запрещаем выделять текст пальцем */
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+	/* Отключаем системное меню по долгому тапу */
+}
+
+body {
+	background-color: #0f172a;
+	/* Глубокий темно-синий/серый фон */
+	color: #f8fafc;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px;
+	overflow: hidden;
+	/* Запрещаем случайный свайп страницы */
+}
+
+/* Красивая кнопка вверху */
+#myBtn {
+	width: 100%;
+	max-width: 400px;
+	padding: 16px;
+	font-size: 18px;
+	font-weight: 600;
+	color: #38bdf8;
+	background: #1e293b;
+	border: 2px solid #38bdf8;
+	border-radius: 16px;
+	box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15);
+	transition: all 0.15s ease;
+	outline: none;
+}
+
+/* Эффект нажатия на кнопку */
+#myBtn:active {
+	transform: scale(0.97);
+	background: #38bdf8;
+	color: #0f172a;
+	box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+/* Область Тачпада */
+#touchpad {
+	width: 100%;
+	max-width: 400px;
+	flex-grow: 1;
+	/* Занимает всё свободное место по высоте */
+	margin-top: 20px;
+	background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+	border: 2px solid #334155;
+	border-radius: 24px;
+	position: relative;
+	box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 10px 25px rgba(0, 0, 0, 0.3);
+	touch-action: none;
+	/* Отключаем стандартные жесты браузера (скролл/зум) */
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+	touch-action: none;
+}
+
+/* Иконка-подсказка по центру тачпада */
+#touchpad::before {
+	content: "TOUCHPAD";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 14px;
+	letter-spacing: 4px;
+	color: #475569;
+	font-weight: 700;
+	pointer-events: none;
+	/* Пропускаем клики сквозь текст */
+	opacity: 0.5;
+}
+
+/* Неоновый подсвет при касании тачпада */
+#touchpad:active {
+	border-color: #38bdf8;
+	box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2);
